@@ -8,13 +8,13 @@ class Usuario(AbstractUser):
     saldo = models.DecimalField(decimal_places=2, max_digits=12, default=0.00)
     
     def __str__(self):
-        return {self.username}
+        return self.username
     
 class Marca(models.Model):
     nombre = models.CharField(max_length=20, unique=True)
     
     def __str__(self):
-        return {self.nombre}
+        return self.nombre
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=50)
@@ -26,7 +26,7 @@ class Producto(models.Model):
     marca = models.ForeignKey(Marca, on_delete=models.CASCADE)
 
     def __str__(self):
-        return {self.nombre}
+        return self.nombre
     
     class Meta:
         unique_together = ['nombre', 'marca']
