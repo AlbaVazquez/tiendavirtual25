@@ -1,6 +1,6 @@
 {% extends 'tienda/base.html' %}
 
-{% block contenido %}
+{% comment %} {% block contenido %}
     {{object.nombre}}
 
     <p>Detalles</p>
@@ -17,4 +17,4 @@
 
     <a href="{% url 'producto_editar' pk=object.pk %}">Editar</a>
     <a href="{% url 'producto_borrar' pk=object.pk %}">Borrar</a>
-{% endblock %}
+{% endblock %} {% endcomment %}

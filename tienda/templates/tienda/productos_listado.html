@@ -1,6 +1,6 @@
 {% extends 'tienda/base.html' %}
 
-{% block contenido %}
+{% comment %} {% block contenido %}
     <ul>
         {% for producto in object_list %}
             <li>
@@ -11,4 +11,4 @@
         <p>No hay productos</p>
         {% endfor %}
     </ul>
-{% endblock %}
+{% endblock %} {% endcomment %}
