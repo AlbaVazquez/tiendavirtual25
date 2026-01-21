@@ -1,16 +1,40 @@
 {% extends 'tienda/base.html' %}
 
-{% comment %} {% block contenido %}
+{% block title %}Confirmar eliminación - {{ object.nombre }}{% endblock %}
 
-<form action="" method="post">
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">¿Estás seguro de que quieres eliminar este producto?</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Atención:</strong> Esta acción es irreversible. Se eliminará el registro del producto y su asociación con compras históricas podría verse afectada dependiendo de la configuración de tu base de datos.
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5>Detalles del producto a eliminar:</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Nombre:</strong> {{ object.nombre }}</li>
+                            <li class="list-group-item"><strong>Modelo:</strong> {{ object.modelo }}</li>
+                            <li class="list-group-item"><strong>Marca:</strong> {{ object.marca.nombre }}</li>
+                            <li class="list-group-item"><strong>Precio:</strong> {{ object.precio }} €</li>
+                        </ul>
+                    </div>
 
-    {% csrf_token %}
-
-    {{form.as_p}}
-    <p>¿Estas seguro que quieres borrar el producto {{object}}?</p>
-
-    <input type="submit" value="borrar"/>
-
-</form>
-
-{% endblock %} {% endcomment %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'listado' %}" class="btn btn-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-danger px-4">Eliminar Definitivamente</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

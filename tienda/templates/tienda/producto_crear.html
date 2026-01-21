@@ -1,15 +1,45 @@
 {% extends 'tienda/base.html' %}
 
-{% comment %} {% block contenido %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Nuevo Producto</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ field.label }}</label>
+                        {{ field }} {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
 
-<form action="" method="post" enctype="multipart/form-data">
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Guardar Producto</button>
+                        <a href="{% url 'listado' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-    {% csrf_token %}
-
-    {{form.as_p}}
-    
-    <input type="submit"/>
-
-</form>
-
-{% endblock %} {% endcomment %}
+<script>
+    document.querySelectorAll('input, select, textarea').forEach(function(input) {
+        input.classList.add('form-control');
+        if(input.type === 'checkbox') {
+            input.classList.remove('form-control');
+            input.classList.add('form-check-input');
+        }
+    });
+</script>
+{% endblock %}

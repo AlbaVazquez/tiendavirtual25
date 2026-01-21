@@ -1,64 +1,63 @@
 {% extends 'basesite.html' %}
 
-{% comment %} {% block base %}
-</head>
-<body class="bg-light">
+{% block main_content %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'compra_listado' %}">TiendaVirtual25</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'compra_listado' %}">Catálogo</a>
+                </li>
+                {% if user.is_staff %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'listado' %}">Gestión (Staff)</a>
+                </li>
+                {% endif %}
+            </ul>
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="https://picsum.photos/200/100" alt="Logo" class="me-2"> Tienda de 2DAW
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="{% url 'compra_listado' %}" role="button" data-bs-toggle="dropdown">
-                            <img src="https://picsum.photos/50/50" class="rounded-circle" alt="User"> {{user.username}}
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'perfil' %}">
+                            <i class="bi bi-person-circle"></i> Mi Perfil ({{ user.username }})
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{% url 'perfil' %}">Perfil</a></li>
-                            {% if user.is_staff %}
-                            <li><a href="{% url 'informes' %}"class="dropdown-item" >Informes</a> </li>       
-                            {%endif%}
-                            <li><hr class="dropdown-divider"></li>
-                            <li><form action="{% url 'logout' %}" method="post">
-                                {% csrf_token %} 
-                                <button type="submit" class="dropdown-item">Cerrar Sesión</button>
-                              </form>
-                            </li>       
-
-                        </ul>
                     </li>
-                </ul>
-            </div>
+                    <li class="nav-item d-flex align-items-center">
+                        <span class="badge bg-secondary ms-2">Saldo: {{ user.saldo }}€</span>
+                    </li>
+                    <p></p>
+                    <li class="nav-item ms-2">
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar Sesión</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
-    </nav>
-    <!-- Messages -->
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert {{ message.tags }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    {% endfor %}
-    {% endif %}
+</nav>
 
-    <!-- Content -->
-    {% block contenido %}
+    <div class="container mt-5 pt-5">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
 
-    {% endblock %}
-    
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-4">
-        © 2025 2DAW | Todos los derechos reservados
-    </footer>
-
-</body>
-{% endblock %} {% endcomment %}
-
-
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+{% endblock %}

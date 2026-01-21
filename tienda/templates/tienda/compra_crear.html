@@ -1,15 +1,7 @@
 {% extends 'tienda/base.html' %}
 
-{% comment %} {% block contenido %}
+{% block title %}Añadir Producto{% endblock %}
 
-<form action="" method="post" enctype="text/plain">
+{% block content %}
 
-    {% csrf_token %} 
-
-    {{form.as_p}}
-    
-    <input type="submit"/>
-
-</form>
-
-{% endblock %} {% endcomment %}
+{% endblock %}

@@ -144,8 +144,8 @@ MEDIA_URL = 'media/'
 
 
 # Redirigir después de iniciar sesión
-LOGIN_REDIRECT_URL = '/'  
+LOGIN_REDIRECT_URL = 'compra_listado'  
 
 # Redirigir después de cerrar sesión
-LOGOUT_REDIRECT_URL = '/accounts/login/' 
+LOGOUT_REDIRECT_URL = 'login' 
 

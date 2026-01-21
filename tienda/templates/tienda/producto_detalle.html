@@ -1,20 +1,24 @@
 {% extends 'tienda/base.html' %}
 
-{% comment %} {% block contenido %}
-    {{object.nombre}}
-
-    <p>Detalles</p>
-    <img src="{{object.foto.url}}" alt="" width="300px">
-    
-    <p>-----------------------------------------------</p>
-    Marca: {{object.marca}}<br>
-    Modelo: {{object.modelo}}<br>
-    Precio: {{object.precio}}<br>
-    ¿VIP? {{object.vip}}<br>
-    {{object.foto}}<br>
-    Unidades: {{object.unidades}}<br>
-    <p>----------------------------------------------</p>
-
-    <a href="{% url 'producto_editar' pk=object.pk %}">Editar</a>
-    <a href="{% url 'producto_borrar' pk=object.pk %}">Borrar</a>
-{% endblock %} {% endcomment %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        {% if producto.foto %}
+            <img src="{{ producto.foto.url }}" class="img-fluid rounded" alt="{{ producto.nombre }}">
+        {% else %}
+            <div class="bg-light text-center py-5">Sin imagen</div>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h1>{{ producto.nombre }}</h1>
+        <p class="text-muted">Modelo: {{ producto.modelo }} | Marca: {{ producto.marca.nombre }}</p>
+        <h3 class="text-primary">{{ producto.precio }}€</h3>
+        <p>Stock disponible: <strong>{{ producto.unidades }}</strong></p>
+        {% if producto.vip %}
+            <span class="badge bg-warning text-dark mb-3">Producto Exclusivo VIP</span>
+        {% endif %}
+        <hr>
+        <a href="{% url 'listado' %}" class="btn btn-outline-secondary">Volver al listado</a>
+    </div>
+</div>
+{% endblock %}

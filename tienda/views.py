@@ -25,17 +25,17 @@ class ProductoEditar(UpdateView):
     model = Producto
     template_name = 'tienda/producto_editar.html'
     fields = '__all__'
-    success_url = reverse_lazy("ProductosListado")
+    success_url = reverse_lazy("listado")
     
 class CrearProducto(CreateView):
     model = Producto
     template_name = 'tienda/producto_crear.html'
     fields = '__all__'
-    success_url = reverse_lazy("ProductosListado")
+    success_url = reverse_lazy("listado")
 
 class ProductoBorrar(DeleteView):
     model = Producto
-    success_url = reverse_lazy("ProductosListado")
+    success_url = reverse_lazy("listado")
     
 class ComprarProducto (LoginRequiredMixin,ListView):
     model = Producto
@@ -44,7 +44,7 @@ class ComprarProducto (LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         contexto = super().get_context_data(**kwargs)
-        marcas = Marca.objects.filter(producto_insull=False).distinct()
+        marcas = Marca.objects.filter(producto__isnull=False).distinct()
         contexto['marcas'] = marcas
         form = CompraForm()
         contexto['compra_form'] = form

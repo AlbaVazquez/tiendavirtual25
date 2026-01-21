@@ -1,137 +1,63 @@
 {% extends 'tienda/base.html' %}
 
-{% comment %} {% block contenido %}
-<!-- Filtros -->
-<div class="container my-4">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <form method="GET" class="row g-3">
-                <div class="col-md-3">
-                    <label>Nombre:</label>
-                    <input type="text" name="filtro_nombre" class='form-control' placeholder="Buscar por nombre"
-                        value="{{request.GET.filtro_nombre}}" />
-                </div>
-                <div class="col-md-3">
-                    <label>Marca:</label>
-                    <select name="filtro_marca" class="form-select">
-                        <option value="">Seleccione una Marca</option>
-                        {% for marca in marcas %}
-                        <option {% if request.GET.filtro_marca == marca.nombre %} selected {% endif %}>
-                            {{marca.nombre}}
-                        </option>
-                        {% empty %}
-                        <p>No hay marcas a seleccionar</p>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label>Precio:</label>
-                    <input type="number" name="filtro_precio" class='form-control' placeholder="Precio Máximo"
-                        value="{{request.GET.filtro_precio}}">
-                </div>
-                <div class="col-md-2">
-                    <input type="submit" class="btn btn-primary w-100" value="Filtrar">
-                </div>
-            </form>
-        </div>
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="display-6"><i class="bi bi-shop"></i> Catálogo de Productos</h2>
+        <p class="text-muted">Selecciona las unidades y pulsa en comprar.</p>
     </div>
 </div>
 
-<!-- Productos -->
-<div class="container">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h5 class="card-title">Lista de Productos</h5>
-            <table class="table table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Foto</th>
-                        <th>Nombre</th>
-                        <th>Modelo</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
-                        <th>Marca</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for producto in productos %}
-                    <tr>
-                        <td>{% if producto.foto %}
-                            <img style="max-width: 100px; max-height: 100px" src="{{ producto.foto.url }}" class='img-productos'>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{% url 'producto_detalle' producto.pk %}">
-                                {{ producto.nombre }}
-                            </a>
-                        </td>
-                        <td>
-                            {{ producto.modelo }}
-                        </td>
-                        <td>
-                            {{ producto.precio }}
-                        </td>
-                        <td>
-                            {{ producto.unidades }}
-                        </td>
-                        <td>
-                            {{ producto.marca }}
-                        </td>
-                        <td>
-                            {% if user.is_staff %}
-                            <a href="{% url 'producto_editar' pk=producto.pk %}" class="btn btn-sm btn-info">Editar</a>
-                            <a href="{% url 'producto_borrar' pk=producto.pk %}"class="btn btn-sm btn-danger" >Borrar</a>
-                            
-                            {% else %}
-                           
-                            <form action="{% url 'checkout' producto.pk %}" method="get">
-                                {% csrf_token %}
-                                {{ compra_form.as_div }}
-                                <button type="submit" class="btn btn-sm btn-info">Comprar</button>
-                            </form>
-                            {% endif%}
-                        </td>
-                        
-                    </tr>
-
-                    {% empty %}
-                    <p> No hay productos</p>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% if user.is_staff %}
-                <a href="{% url 'crear' %}" class="btn btn-sm btn-info">Crear producto</a>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for producto in productos %}
+    <div class="col">
+        <div class="card h-100 shadow-sm border-0 {% if producto.vip %}border-warning{% endif %}">
+            {% if producto.vip %}
+            <div class="position-absolute top-0 end-0 bg-warning text-dark px-2 py-1 rounded-start fw-bold" style="z-index:1;">VIP</div>
             {% endif %}
-             <!-- Controles de paginación -->
-<nav class="mt-4">
-    <ul class="pagination justify-content-center">
-        {% if page_obj.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page=1">&laquo; Primera</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
-            </li>
-        {% endif %}
 
-        <li class="page-item active">
-            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
-        </li>
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center overflow-hidden" style="height: 220px;">
+                {% if producto.foto %}
+                <img src="{{ producto.foto.url }}" alt="{{ producto.nombre }}" class="img-fluid" style="max-height: 100%;">
+                {% else %}
+                <div class="text-center text-secondary">
+                    <span style="font-size: 3rem;">📷</span>
+                    <p>Sin imagen</p>
+                </div>
+                {% endif %}
+            </div>
 
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text text-muted small">{{ producto.marca.nombre }} - {{ producto.modelo }}</p>
+                
+                <div class="mt-auto">
+                    <h4 class="text-primary fw-bold mb-3">{{ producto.precio }} €</h4>
+                    
+                    <form action="{% url 'checkout' producto.pk %}" method="get" class="d-flex gap-2">
+                        <div class="form-floating flex-grow-1">
+                            <input type="number" name="unidades" class="form-control" id="u-{{producto.id}}" value="1" min="1" max="{{ producto.unidades }}">
+                            <label for="u-{{producto.id}}">Unidades</label>
+                        </div>
+                        <button type="submit" class="btn btn-success w-50" {% if producto.unidades < 1 %}disabled{% endif %}>
+                            {% if producto.unidades > 0 %}
+                                Comprar
+                            {% else %}
+                                Agotado
+                            {% endif %}
+                        </button>
+                    </form>
+                    <div class="text-end mt-2">
+                        <small class="text-muted">Stock disponible: {{ producto.unidades }}</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div> {% endcomment %}
-
-
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <h3 class="text-muted">No hay productos disponibles en este momento.</h3>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

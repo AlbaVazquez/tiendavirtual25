@@ -1,10 +1,70 @@
 {% extends 'tienda/base.html' %}
 
-{% comment %} {% block contenido %}
-    <p>¿Desea comprar {{unidades}} {{producto.nombre}} por un total de {{total}}€ ({{producto.precio}} cada una)?</p>
-    <form action="" method="post">
-        {%csrf_token%}
-        <input type="hidden" name="unidades" id="unidades" value="{{unidades}}">
-        <button type="submit">Comprar</button>
-    </form>
-{% endblock %} {% endcomment %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-success text-white text-center py-3">
+                    <h3 class="mb-0">Confirmar Pedido</h3>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+                        {% if producto.foto %}
+                        <img src="{{ producto.foto.url }}" alt="{{ producto.nombre }}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-1">{{ producto.nombre }}</h5>
+                            <small class="text-muted">{{ producto.marca.nombre }} | {{ producto.modelo }}</small>
+                        </div>
+                    </div>
+
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Precio Unitario</span>
+                            <span>{{ producto.precio }} €</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Cantidad seleccionada</span>
+                            <strong>x {{ unidades }}</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center bg-light">
+                            <span class="fs-5">Total a Pagar</span>
+                            <span class="fs-4 fw-bold text-success">{{ total }} €</span>
+                        </li>
+                    </ul>
+
+                    <div class="alert {% if user.saldo >= total %}alert-info{% else %}alert-danger{% endif %} mb-4">
+                        <div class="d-flex justify-content-between">
+                            <span>Tu saldo actual:</span>
+                            <strong>{{ user.saldo }} €</strong>
+                        </div>
+                        {% if user.saldo < total %}
+                        <hr>
+                        <div class="fw-bold"><i class="bi bi-exclamation-triangle"></i> No tienes saldo suficiente para esta compra.</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {% if user.saldo >= total %}
+                            <form method="post" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="unidades" value="{{ unidades }}">
+                                <button type="submit" class="btn btn-success btn-lg w-100">
+                                    <i class="bi bi-credit-card"></i> Confirmar y Pagar
+                                </button>
+                            </form>
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg w-100" disabled>Saldo Insuficiente</button>
+                        {% endif %}
+                        
+                        <a href="{% url 'compra_listado' %}" class="btn btn-outline-danger">Cancelar</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
