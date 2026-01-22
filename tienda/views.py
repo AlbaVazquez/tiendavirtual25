@@ -78,15 +78,15 @@ class Checkout(LoginRequiredMixin, View):
     def post(self,request, pk):
         producto = get_object_or_404(Producto, pk = pk)
         unidades = request.GET.get('unidades')
-        total = unidades * producto.precio
+        total = int(unidades) * producto.precio
         usuario = request.user
         
         if usuario.saldo >= total:
-            if unidades <= producto.unidades:
+            if int(unidades) <= producto.unidades:
                 Compra.objects.create(usuario=usuario, unidades=int(unidades), producto=producto, importe=total)
                 usuario.saldo -= total
                 usuario.save()
-                producto.unidades -= unidades
+                producto.unidades -= int(unidades)
                 producto.save()
                 messages.success(request, "Compra realizada con éxito.")
                 
@@ -108,7 +108,10 @@ class PerfilView(LoginRequiredMixin, ListView):
         query = query.filter(usuario = self.request.user)
         return query
 
-
+# def checkout (request, pk):
+#     producto = Producto.objects.get(pk = pk)
+    
+#     return render (request, 'app/checkout.html', {'producto':producto})
         
 # @staff_member_required
 # def informes(request):
