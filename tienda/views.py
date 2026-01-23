@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CompraForm
+from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.decorators import login_required
 # from django.contrib.admin.views.decorators import staff_member_required
 # from django.db.models import Sum, Count
@@ -68,36 +69,81 @@ class ComprarProducto (LoginRequiredMixin,ListView):
             
         return query
     
-class Checkout(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        producto = get_object_or_404(Producto, pk = pk)
-        unidades = request.GET.get('unidades')
-        total = int(unidades) * producto.precio
-        return render(request, 'tienda/checkout.html', {'producto':producto, 'unidades':unidades, 'total':total})
+# class Checkout(LoginRequiredMixin, View):
+#     def get(self, request, pk):
+#         producto = get_object_or_404(Producto, pk = pk)
+#         unidades = request.GET.get('unidades')
+#         total = int(unidades) * producto.precio
+#         return render(request, 'tienda/checkout.html', {'producto':producto, 'unidades':unidades, 'total':total})
     
-    def post(self,request, pk):
-        producto = get_object_or_404(Producto, pk = pk)
-        unidades = request.GET.get('unidades')
-        total = int(unidades) * producto.precio
-        usuario = request.user
+#     def post(self,request, pk):
+#         producto = get_object_or_404(Producto, pk = pk)
+#         unidades = request.GET.get('unidades')
+#         total = int(unidades) * producto.precio
+#         usuario = request.user
         
+#         if usuario.saldo >= total:
+#             if int(unidades) <= producto.unidades:
+#                 Compra.objects.create(usuario=usuario, unidades=int(unidades), producto=producto, importe=total)
+#                 usuario.saldo -= total
+#                 usuario.save()
+#                 producto.unidades -= int(unidades)
+#                 producto.save()
+#                 messages.success(request, "Compra realizada con éxito.")
+                
+#             else:
+#                 messages.error(request, "No quedan suficientes unidades en stock.")
+
+#         else:
+#             messages.error(request, "No cuentas con saldo suficiente.")
+    
+#         return redirect("compra_listado")
+    
+@login_required
+def checkout(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    
+    if request.method == 'GET':
+        unidades = request.GET.get('unidades', 1)
+        total = int(unidades) * producto.precio
+        
+        return render(request, 'tienda/checkout.html', {
+            'producto': producto, 
+            'unidades': unidades, 
+            'total': total
+        })
+
+    elif request.method == 'POST':
+        usuario = request.user
+        unidades = int(request.POST.get('unidades'))
+        total = unidades * producto.precio
+        
+
         if usuario.saldo >= total:
-            if int(unidades) <= producto.unidades:
-                Compra.objects.create(usuario=usuario, unidades=int(unidades), producto=producto, importe=total)
+            
+            if unidades <= producto.unidades:
+                Compra.objects.create(
+                    usuario=usuario, 
+                    unidades=unidades, 
+                    producto=producto, 
+                    importe=total
+                )
+                
                 usuario.saldo -= total
                 usuario.save()
-                producto.unidades -= int(unidades)
+                producto.unidades -= unidades
                 producto.save()
+                
                 messages.success(request, "Compra realizada con éxito.")
                 
             else:
                 messages.error(request, "No quedan suficientes unidades en stock.")
-
         else:
             messages.error(request, "No cuentas con saldo suficiente.")
     
         return redirect("compra_listado")
     
+
 class PerfilView(LoginRequiredMixin, ListView):
     model = Compra
     paginate_by = 2
@@ -108,13 +154,6 @@ class PerfilView(LoginRequiredMixin, ListView):
         query = query.filter(usuario = self.request.user)
         return query
 
-# def checkout (request, pk):
-#     producto = Producto.objects.get(pk = pk)
-    
-#     return render (request, 'app/checkout.html', {'producto':producto})
-        
-# @staff_member_required
-# def informes(request):
     
 #     topclients = Usuario.objects.annotate(importe_compras = Sum('compra__importe'), total_compras=Count('compra')).order_by('-importe_compras')[:10]
 #     topProductos = Producto.objects.annotate(total_vendidos = Sum('compra__unidades')).order_by('-total_vendidos')[:10]
