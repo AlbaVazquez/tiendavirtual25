@@ -1,14 +1,13 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import *
-from django.views.generic import View, ListView, DetailView, CreateView, UpdateView,DeleteView
+from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView,DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CompraForm
 from django.contrib.auth.decorators import login_required
-# from django.contrib.auth.decorators import login_required
-# from django.contrib.admin.views.decorators import staff_member_required
-# from django.db.models import Sum, Count
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count
 
 
 # Create your views here.
@@ -118,7 +117,6 @@ def checkout(request, pk):
         unidades = int(request.POST.get('unidades'))
         total = unidades * producto.precio
         
-
         if usuario.saldo >= total:
             
             if unidades <= producto.unidades:
@@ -142,7 +140,6 @@ def checkout(request, pk):
             messages.error(request, "No cuentas con saldo suficiente.")
     
         return redirect("compra_listado")
-    
 
 class PerfilView(LoginRequiredMixin, ListView):
     model = Compra
@@ -154,7 +151,9 @@ class PerfilView(LoginRequiredMixin, ListView):
         query = query.filter(usuario = self.request.user)
         return query
 
+def informes(request):
     
-#     topclients = Usuario.objects.annotate(importe_compras = Sum('compra__importe'), total_compras=Count('compra')).order_by('-importe_compras')[:10]
-#     topProductos = Producto.objects.annotate(total_vendidos = Sum('compra__unidades')).order_by('-total_vendidos')[:10]
-#     return render(request, 'tienda/informes.html',{'topclients':topclients, 'topProductos':topProductos})
+    topclientes = Usuario.objects.annotate(importe_compras = Sum('compra__importe'), total_compras=Count('compra')).order_by('-importe_compras')[:10]
+    topProductos = Producto.objects.annotate(total_vendidos = Sum('compra__unidades')).order_by('-total_vendidos')[:10]
+    
+    return render(request, 'tienda/informes.html',{'topclients':topclientes, 'topProductos':topProductos})

@@ -14,5 +14,5 @@ urlpatterns = [
     #path('checkout/<int:pk>',Checkout.as_view(),name='checkout'),
     path('checkout/<int:pk>/', views.checkout, name='checkout'),
     path('perfil',PerfilView.as_view(),name='perfil'),
-    # path('informes',informes,name='informes'),
+    path('informes',views.informes,name='informes'),
 ]
