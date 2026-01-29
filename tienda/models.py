@@ -44,3 +44,14 @@ class Compra(models.Model):
     
     class Meta:
         unique_together = ['usuario', 'producto', 'fecha']
+        
+class Promocion(models.Model):
+    nombre = models.CharField(max_length=50)
+    codigo = models.CharField(max_length=50)
+    descuento = models.DecimalField(decimal_places=2, max_digits=12, default=0.00)
+    fecha_inicio = models.DateTimeField(auto_now_add=True)
+    fecha_fin = models.DateTimeField(blank = True)
+    
+    def __str__(self):
+        return f'{self.nombre}'
+    

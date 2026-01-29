@@ -1,11 +1,10 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import *
+from .models import Producto, Compra, Marca, Usuario, Promocion
 from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView,DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CompraForm
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
 
@@ -101,20 +100,24 @@ class ComprarProducto (LoginRequiredMixin,ListView):
 @login_required
 def checkout(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
+    promocion = get_object_or_404(Promocion)
     
     if request.method == 'GET':
         unidades = request.GET.get('unidades', 1)
+        codigo = request.GET.get('codigo')
         total = int(unidades) * producto.precio
         
         return render(request, 'tienda/checkout.html', {
             'producto': producto, 
             'unidades': unidades, 
-            'total': total
+            'total': total,
+            'codigo':codigo
         })
 
     elif request.method == 'POST':
         usuario = request.user
         unidades = int(request.POST.get('unidades'))
+        codigo = request.POST.get('codigo')
         total = unidades * producto.precio
         
         if usuario.saldo >= total:
